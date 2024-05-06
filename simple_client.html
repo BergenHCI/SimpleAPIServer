@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Simple API Client</title>
+</head>
+<body>
+    <h1>Simple API Client</h1>
+
+    <!-- Users Section -->
+    <section id="users-section">
+        <h2>Users</h2>
+        <ul id="users-list"></ul>
+        <form id="user-form">
+            <input type="text" id="user-name" placeholder="User Name" required>
+            <button type="submit">Add User</button>
+        </form>
+    </section>
+
+    <!-- Blog Posts Section -->
+    <section id="blog-posts-section">
+        <h2>Blog Posts</h2>
+        <ul id="blog-posts-list"></ul>
+        <form id="blog-post-form">
+            <input type="text" id="blog-post-title" placeholder="Post Title" required>
+            <textarea id="blog-post-content" placeholder="Post Content" required></textarea>
+            <button type="submit">Add Post</button>
+        </form>
+    </section>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+
+        // Users Section
+
+        const fetchUsers = () => {
+            $.getJSON(`${API_BASE_URL}/users`, (users) => {
+                const usersList = $('#users-list');
+                usersList.empty();
+                $.each(users, (index, user) => {
+                    usersList.append(`<li>ID: ${user.id}, Name: ${user.name}</li>`);
+                });
+            });
+        };
+
+        $('#user-form').on('submit', (event) => {
+            event.preventDefault();
+            var userName = $('#user-name').val();
+            $.ajax({
+                url: `${API_BASE_URL}/users`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: userName }),
+                success: () => {
+                    fetchUsers();
+                    $('#user-name').val('');
+                }
+            });
+        });
+
+        fetchUsers();
+
+        // Blog Posts Section
+
+        const fetchBlogPosts = () => {
+            $.getJSON(`${API_BASE_URL}/blog_posts`, (posts) => {
+                const blogPostsList = $('#blog-posts-list');
+                blogPostsList.empty();
+                $.each(posts, (index, post) => {
+                    blogPostsList.append(`<li>ID: ${post.id}, Title: ${post.title}, Content: ${post.content}</li>`);
+                });
+            });
+        };
+
+        $('#blog-post-form').on('submit', (event) => {
+            event.preventDefault();
+            var postTitle = $('#blog-post-title').val();
+            var postContent = $('#blog-post-content').val();
+            $.ajax({
+                url: `${API_BASE_URL}/blog_posts`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ title: postTitle, content: postContent }),
+                success: () => {
+                    fetchBlogPosts();
+                    $('#blog-post-title').val('');
+                    $('#blog-post-content').val('');
+                }
+            });
+        });
+
+        fetchBlogPosts();
+
+    </script>
+</body>
+</html>
